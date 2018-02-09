@@ -1,0 +1,315 @@
+<!doctype html>
+
+<meta charset="utf-8">
+<header>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+    
+    <script src="js/jquery-3.3.1.js"></script>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src='http://d3js.org/d3.v2.js'></script>
+
+</header>
+<title>DataVis</title>
+
+
+<style>
+    body {
+        text-align: left;
+    }
+    /* #container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+    }
+    p, #overlay {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    } */
+    #overlay {
+        position: relative;
+        display: inline-block;
+    }
+    label {
+        display: inline-block;
+        margin: 0 1em 1em;
+    }
+    canvas {
+        border: 1px solid;
+    }
+    #popup {
+        display: none;
+        position: absolute;
+        background: rgba(255, 255, 255, 0.5);
+        padding: 1em;
+        pointer-events: none;
+    }
+
+    #rect {
+        display: none;
+        position: absolute;
+        background: rgba(169, 238, 255, 0.5);
+        border: 2px dashed gray;
+        user-select: none;
+        pointer-events: none;
+    }
+
+    #rect .tag {
+        position: absolute;
+        font-size: 0.8em;
+        white-space: nowrap;
+        user-select: none;
+        pointer-events: none;
+    }
+
+    #tag1 {
+        bottom: 100%;
+        right: 100%;
+    }
+
+    #tag2 {
+        left: 100%;
+        top: 100%;
+    }
+
+    #content {
+        font-size: 1.2em;
+        font-weight: bold;
+        white-space: nowrap;
+        user-select: none;
+        pointer-events: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .status{
+        
+        
+    }
+
+</style>
+<body>
+
+<div class="row">
+  <div class="col-sm-7" style="margin-top: 20px; margin-left: 20px;">
+    <div id="plain-grid">
+    </div>
+  </div>
+  <div class="col-sm-5-pull-left" style="margin-top: 20px;">
+    <div id="side_status" class="status" >
+    </div>
+  </div>
+
+</body>
+<script type="text/javascript">
+var set_color=new Array();
+function random_rgba() {
+    var o = Math.round, r = Math.random, s = 255;
+    return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
+}
+
+function gridData() {
+    var allData=new Array();
+    var data = new Array();
+    
+
+    $.getJSON("data/sta20.json", function(json) {
+    console.log(json[0]); 
+    allData[1]=json;
+    //set color
+
+    for (var i =0 ; i <json[1].length; i++) {
+        set_color.push(random_rgba());
+    }
+
+    // this will show the info it in firebug console
+    
+   
+    
+    var xpos = 1; //starting xpos and ypos at 1 so the stroke will show when we make the grid below
+    var ypos = 1;
+    var width = 800/parseInt(json[0][0]);
+    var height = 800/parseInt(json[0][1]);
+    
+    // iterate for rows 
+    var i=0;
+
+    for (var row = 0; row < parseInt(json[0][0]); row++) {
+        data.push( new Array() );
+        
+        // iterate for cells/columns inside rows
+        for (var column = 0; column < parseInt(json[0][1]); column++) {
+            var temp=0;
+            var index=-1;
+            for(var j=0;j<json[2].length;j++){
+                var a=json[2][j][0];
+                var b=json[2][j][1];
+                
+                
+                if(a==row && b==column){
+                    temp=1;
+                    index=json[4][j];
+                }
+            }
+            for(var j=0;j<json[3].length;j++){
+                var a=json[3][j][0];
+                var b=json[3][j][1];
+                if(a==row && b==column){
+                    temp=2;
+                }
+
+            }
+            data[row].push({
+                id: i,
+                x: xpos,
+                y: ypos,
+                width: width,
+                height: height,
+                value:[row,column],
+                mark:temp,
+                color:index
+            })
+            // increment the x position. I.e. move it over by 50 (width variable)
+            xpos += width;
+            i++;
+        }
+        // reset the x position after a row is complete
+        xpos = 1;
+        // increment the y position for the next row. Move it down 50 (height variable)
+        ypos += height; 
+    }
+    });
+    allData[0]=data;
+    return allData;
+    
+}
+
+var gridData = gridData();  
+var filedata;
+setTimeout(function(){ 
+    filedata=gridData[1];
+    gridData=gridData[0];
+    console.log(gridData);
+    
+    console.log(filedata);
+    var plaingrid = d3.select("#plain-grid")
+        .append("svg")
+        .attr("width","850px")
+        .attr("height","850px");
+    var plainrow = plaingrid.selectAll(".row")
+        .data(gridData)
+        .enter().append("g")
+        .attr("class", "row");
+        
+    var plaincolumn = plainrow.selectAll(".square")
+        .data(function(d) { return d; })
+        .enter().append("rect")
+        .attr("id",function(d){return "case_"+d.id})
+        .attr("class","square")
+        .attr("value",function(d){return d.value})
+        .attr("mark",function(d){return d.mark})
+        .attr("color",function(d){return d.color})
+        .attr("x", function(d) { return d.x; })
+        .attr("y", function(d) { return d.y; })
+        .attr("width", function(d) { return d.width; })
+        .attr("height", function(d) { return d.height; })
+        .style("fill", "#fff")
+        .style("stroke", "#222");
+    console.log(filedata);
+    for(var i=0;i<gridData.length*gridData.length;i++){
+        var element=document.getElementById("case_"+String(i));
+        var mark = element.getAttribute("mark");
+        var color = element.getAttribute("color");
+        if(mark==1){
+            element.setAttribute("style","fill:"+set_color[parseInt(element.getAttribute("color"))]+";"+"stroke:rgb(34, 34, 34);");
+        }
+        if(mark==2){
+            var svg = d3.select("svg");
+            var x1=parseInt(element.getAttribute("x"));
+            var y1=parseInt(element.getAttribute("y"));
+            var width=parseInt(element.getAttribute("width"));
+            // var line = svg.selectAll('path')
+            svg.append('path')
+            .style("stroke", "black")  // colour the line
+            .style("fill", "none")
+            .attr("id","tri_"+String(i))
+            .attr("d", "M" +String(x1+width/2)+","+String(y1)+"," +"L" +String(x1)+","+String(y1+width)+","+ "L"+String(x1+width)+","+String(y1+width)+ "Z");
+        }
+    }
+    console.log(String(filedata[0]));
+    $("#side_status").append("<h3>Map Size:["+String(filedata[0])+"]</h3>");
+    $("#side_status").append("<h3>Hole Number: "+String(filedata[2].length)+"</h3>");
+    $("#side_status").append("<h3>Source Number: "+String(filedata[3].length)+"</h3>");
+    $("#side_status").append("<h3>Agent Number: "+String(filedata[3].length)+"</h3>");
+    $("#side_status").append("<h3>City Distridution: </h3>");
+
+    var w = 300,                        //width
+    h = 300,                            //height
+    r = 100,                            //radius
+    color = d3.scale.category20c();     //builtin range of colors
+    var pie_chart=filedata[1];
+    var pie_data=new Array();
+    for (var i = 0; i<pie_chart.length; i++) {
+        pie_data.push({
+            label:String((pie_chart[i]*100).toFixed(2))+"%", 
+            value:pie_chart[i]
+        })
+    }
+    console.log(pie_data);
+    
+    var vis = d3.select("#side_status")
+        .append("svg:svg")              //create the SVG element inside the <body>
+        .data([pie_data])                   //associate our data with the document
+            .attr("width", w)           //set the width and height of our visualization (these will be attributes of the <svg> tag
+            .attr("height", h)
+        .append("svg:g")                //make a group to hold our pie chart
+            .attr("transform", "translate(" + r + "," + r + ")")    //move the center of the pie chart from 0, 0 to radius, radius
+
+    var arc = d3.svg.arc()              //this will create <path> elements for us using arc data
+        .outerRadius(r);
+
+    var pie = d3.layout.pie()           //this will create arc data for us given a list of values
+        .value(function(d) { return d.value; });    //we must tell it out to access the value of each element in our data array
+
+    var arcs = vis.selectAll("g.slice")     //this selects all <g> elements with class slice (there aren't any yet)
+        .data(pie)                          //associate the generated pie data (an array of arcs, each having startAngle, endAngle and value properties) 
+        .enter()                            //this will create <g> elements for every "extra" data element that should be associated with a selection. The result is creating a <g> for every object in the data array
+            .append("svg:g")                //create a group to hold each slice (we will have a <path> and a <text> element associated with each slice)
+                .attr("class", "slice");    //allow us to style things in the slices (like text)
+
+        arcs.append("svg:path")
+                .attr("fill", function(d, i) { return set_color[i]; } ) //set the color for each slice to be chosen from the color function defined above
+                .attr("d", arc);                                    //this creates the actual SVG path using the associated data (pie) with the arc drawing function
+
+        arcs.append("svg:text")                                     //add a label to each slice
+                .attr("transform", function(d) {                    //set the label's origin to the center of the arc
+                //we have to make sure to set these before calling arc.centroid
+                d.innerRadius = 0;
+                d.outerRadius = r;
+                return "translate(" + arc.centroid(d) + ")";        //this gives us a pair of coordinates like [50, 50]
+            })
+            .attr("text-anchor", "middle")                          //center the text on it's origin
+            .text(function(d, i) { return pie_data[i].label; });        //get the label from our original data array
+    
+    $("#side_status").append("<button type='button' class='btn btn-primary' onclick='process()'>Run</button>");
+
+    $.getJSON("data/ob20.json", function(json) {
+        console.log(json);
+    });
+
+    
+}, 500);
+// I like to log the data to the console for quick debugging
+
+function process(){
+    alert("works!!!!");
+}
+
+</script>
+
