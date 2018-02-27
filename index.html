@@ -93,6 +93,41 @@
         
     }
 
+    .slidecontainer {
+    width: 100%;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 25px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: #4CAF50;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    background: #4CAF50;
+    cursor: pointer;
+}
+
 </style>
 <body>
 
@@ -105,15 +140,93 @@
     <div id="side_status" class="status" >
     </div>
   </div>
-
 </body>
 <script type="text/javascript">
+    var click_time=0;
 var set_color=new Array();
+function drawCircle(temp_data){
+    // setTimeout(function(){
+       
+    //     console.log("_____________");
+    // }, 2000); 
+     var svg = d3.select("svg");
+    var myC = circleGen()
+       .x(function(d) { return d.x; })
+       .y(function(d) { return d.y; })
+       .r(function(d) { return d.r; });
+    svg.selectAll("path.circle")
+        .data(temp_data)
+      .enter().append("path")
+        .attr("class", "circle")
+        .attr("d", myC)
+        .style("stroke", "#000000")
+        .style("fill", function(d) { 
+            if(d.fill==-1){
+                return "gray";
+            }else{
+                return set_color[d.fill];
+            }});
+    // setTimeout(function(){
+    //     d3.select("svg").selectAll("path.circle").remove();
+    // }, 2000);  
+}
+function circleGen() {
+  //set defaults
+  var r = function(d) { return d.radius; },
+      x = function(d) { return d.x; },
+      y = function(d) { return d.y; };
+  
+  //returned function to generate circle path
+  function circle(d) {
+    var cx = d3.functor(x).call(this, d),
+        cy = d3.functor(y).call(this, d),
+        myr = d3.functor(r).call(this, d);
+
+    return "M" + cx + "," + cy + " " +
+           "m" + -myr + ", 0 " +
+           "a" + myr + "," + myr + " 0 1,0 " + myr*2  + ",0 " +
+           "a" + myr + "," + myr + " 0 1,0 " + -myr*2 + ",0Z";
+  }
+  
+  //getter-setter methods
+  circle.r = function(value) {
+    if (!arguments.length) return r; r = value; return circle;
+  };  
+  circle.x = function(value) {
+    if (!arguments.length) return x; x = value; return circle;
+  };  
+  circle.y = function(value) {
+    if (!arguments.length) return y; y = value; return circle;
+  };
+  
+  return circle;
+}
 function random_rgba() {
     var o = Math.round, r = Math.random, s = 255;
     return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
 }
-
+function draw_obj(j){
+    var circle_data = JSON.parse(localStorage.getItem("circle_data"));
+    console.log(click_time);
+    d3.select("svg").selectAll("path.circle").remove();
+     var svg = d3.select("svg");
+    var myC = circleGen()
+       .x(function(d) { return d.x; })
+       .y(function(d) { return d.y; })
+       .r(function(d) { return d.r; });
+    svg.selectAll("path.circle")
+        .data(circle_data[j])
+      .enter().append("path")
+        .attr("class", "circle")
+        .attr("d", myC)
+        .style("stroke", "#000000")
+        .style("fill", function(d) { 
+            if(d.fill==-1){
+                return "gray";
+            }else{
+                return set_color[d.fill];
+            }});
+}
 function gridData() {
     var allData=new Array();
     var data = new Array();
@@ -154,7 +267,7 @@ function gridData() {
                 
                 if(a==row && b==column){
                     temp=1;
-                    index=json[4][j];
+                    
                 }
             }
             for(var j=0;j<json[3].length;j++){
@@ -162,6 +275,7 @@ function gridData() {
                 var b=json[3][j][1];
                 if(a==row && b==column){
                     temp=2;
+                    index=json[4][j];
                 }
 
             }
@@ -195,9 +309,6 @@ var filedata;
 setTimeout(function(){ 
     filedata=gridData[1];
     gridData=gridData[0];
-    console.log(gridData);
-    
-    console.log(filedata);
     var plaingrid = d3.select("#plain-grid")
         .append("svg")
         .attr("width","850px")
@@ -221,15 +332,14 @@ setTimeout(function(){
         .attr("height", function(d) { return d.height; })
         .style("fill", "#fff")
         .style("stroke", "#222");
-    console.log(filedata);
     for(var i=0;i<gridData.length*gridData.length;i++){
         var element=document.getElementById("case_"+String(i));
         var mark = element.getAttribute("mark");
         var color = element.getAttribute("color");
-        if(mark==1){
+        if(mark==2){
             element.setAttribute("style","fill:"+set_color[parseInt(element.getAttribute("color"))]+";"+"stroke:rgb(34, 34, 34);");
         }
-        if(mark==2){
+        if(mark==1){
             var svg = d3.select("svg");
             var x1=parseInt(element.getAttribute("x"));
             var y1=parseInt(element.getAttribute("y"));
@@ -243,10 +353,15 @@ setTimeout(function(){
         }
     }
     console.log(String(filedata[0]));
+    $.getJSON("data/ob20.json", function(json) {
+        // console.log(json);
+        localStorage.setItem("ob_data", JSON.stringify(json));
+    });
+    console.log(JSON.parse(localStorage.getItem("ob_data")));
     $("#side_status").append("<h3>Map Size:["+String(filedata[0])+"]</h3>");
-    $("#side_status").append("<h3>Hole Number: "+String(filedata[2].length)+"</h3>");
-    $("#side_status").append("<h3>Source Number: "+String(filedata[3].length)+"</h3>");
-    $("#side_status").append("<h3>Agent Number: "+String(filedata[3].length)+"</h3>");
+    $("#side_status").append("<h3>Hole Number: "+String(filedata[3].length)+"</h3>");
+    $("#side_status").append("<h3>Source Number: "+String(filedata[2].length)+"</h3>");
+    $("#side_status").append("<h3>Agent Number: "+String(JSON.parse(localStorage.getItem("ob_data"))[0][0][0].length)+"</h3>");
     $("#side_status").append("<h3>City Distridution: </h3>");
 
     var w = 300,                        //width
@@ -297,19 +412,76 @@ setTimeout(function(){
             .attr("text-anchor", "middle")                          //center the text on it's origin
             .text(function(d, i) { return pie_data[i].label; });        //get the label from our original data array
     
-    $("#side_status").append("<button type='button' class='btn btn-primary' onclick='process()'>Run</button>");
+    $("#side_status").append("<button type='button' id='button1' class='btn btn-primary' onclick='process()'>load</button>");
 
-    $.getJSON("data/ob20.json", function(json) {
-        console.log(json);
-    });
+
 
     
 }, 500);
 // I like to log the data to the console for quick debugging
 
 function process(){
-    alert("works!!!!");
+    var circle_data=[];
+    var data=JSON.parse(localStorage.getItem("ob_data"));
+    // var data_index=0;
+    for(var i=0;i<data.length;i++){
+        var data_index=0;
+        var position=data[i][3][0];
+        var temp_data=new Array();
+        // setTimeout(function(){
+
+        // });
+        for(var j=0;j<position.length;j++){
+            for(var k=0;k<gridData.length*gridData.length;k++){
+                var element=document.getElementById("case_"+String(k));
+                var value = element.getAttribute("value");
+                value=value.split(",");
+                var x=parseInt(value[0]);
+                var y=parseInt(value[1]);
+                if (x==position[j][0]&&y==position[j][1]) {
+                    // console.log(x+"__"+y);
+                    // var svg = d3.select("#case_"+String(i));
+                    var x1=parseInt(element.getAttribute("x"));
+                    var y1=parseInt(element.getAttribute("y"));
+                    var width=parseInt(element.getAttribute("width"));
+                    temp_data[data_index]={
+                        x: x1+width/2, 
+                        y: y1+width/2, 
+                        r: width/2, 
+                        fill: data[i][4][0][data_index]
+                        }
+                    data_index++;
+                }
+            }
+        }
+       circle_data.push(temp_data);
+       // drawCircle(temp_data);
+
+
+
+    }
+    console.log(circle_data);
+    localStorage.setItem("circle_data",JSON.stringify(circle_data));
+    $("#button1").hide();
+    $("#side_status").append("<div class='slidecontainer'>"+
+  "<input type='range' min='0' max="+circle_data.length+" value='0' class='slider' id='myRange'>"+
+  "<p>Timestep: <span id='demo'></span></p>"+
+'</div>');
+    setTimeout(function(){
+        var slider = document.getElementById("myRange");
+var output = document.getElementById("demo");
+output.innerHTML = slider.value;
+
+slider.oninput = function() {
+  output.innerHTML = this.value;
+  draw_obj(this.value-1);
+
+}
+},1000);
+    // $("#side_status").append("<button type='button' class='btn btn-primary' onclick='draw_obj()'>next</button>");
 }
 
 </script>
+</html>
+
 
