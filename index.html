@@ -205,10 +205,32 @@
 </div>
 </body>
 <script type="text/javascript">
-    var sta;
+    var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+};
+    var sta=getUrlParameter('sta');
+    var ob=getUrlParameter('ob');
     var circle_data=[];
     var ob_data=[];
     var set_color=new Array();
+     if (sta!=null&&ob!=null) {
+        sta+='.json';
+        ob+='.json';
+        pre_process();
+    }
+
+
 function circleGen() {
   //set defaults
   var r = function(d) { return d.radius; },
@@ -271,7 +293,7 @@ function setGridData() {
     
 
     $.getJSON("data/"+sta, function(json) {
-    console.log(json[0]); 
+    console.log(json); 
     allData[1]=json;
     //set color
 
@@ -343,99 +365,18 @@ function setGridData() {
 
 
 // I like to log the data to the console for quick debugging
-
-function process(gridData){
-    // var circle_data=[];
-    // var data=JSON.parse(localStorage.getItem("ob_data"));
-    var data=ob_data;
-    // var data_index=0;
-    for(var i=0;i<data.length;i++){
-        var data_index=0;
-        var position=data[i][3][0];
-        var temp_data=new Array();
-        for(var j=0;j<position.length;j++){
-            var x=position[j][0];
-            var y=position[j][1];
-            var element=document.getElementById("case_"+String(x*gridData.length+y));
-            var x1=parseInt(element.getAttribute("x"));
-            var y1=parseInt(element.getAttribute("y"));
-            var width=parseInt(element.getAttribute("width"));
-            temp_data[data_index]={
-                x: x1+width/2, 
-                y: y1+width/2, 
-                r: width/2, 
-                fill: data[i][4][0][data_index]
-                }
-            data_index++;
-        }
-       circle_data.push(temp_data);
-    }
-    console.log(circle_data);
-    // localStorage.setItem("circle_data",JSON.stringify(circle_data));
-    $("#side_status").append("<h3>Timestep: <span id='demo'></span></h3>");
-    $("#side_status").append("<h3>Reward: <span id='reward'></span> </h3>");
-    $("#side_status").append("<h3>R/T: <span id='r_t'></span> </h3>");
-    $("#side_status").append("<div class='slidecontainer'>"+
-      "<input type='range' min='0' max="+circle_data.length+" value='0' class='slider' id='myRange'>"+
-      "<p>Timestep: <span id='demo1'></span></p>"+
-    '</div>');
-    $("#side_status").append("<button onclick='change_data()' type='button' class='btn btn-primary'>Change Data</button>");
-     // document.getElementById("main").style.display = "block";
-    document.getElementById("loader").style.display = "none";
-    setTimeout(function(){
-        var slider = document.getElementById("myRange");
-        var output = document.getElementById("demo");
-        var output1 = document.getElementById("demo1");
-        var reward = document.getElementById("reward");
-        var r_t = document.getElementById("r_t");
-        output.innerHTML = slider.value;
-        output1.innerHTML = slider.value;
-        reward.innerHTML = slider.value;
-        r_t.innerHTML = slider.value;
-
-
-        slider.oninput = function() {
-          output.innerHTML = this.value;
-          output1.innerHTML = this.value;
-          if(this.value!=0){
-            var reward_data=data[this.value-1][1][0];
-        }else{
-            var reward_data=0
-        }
-          
-          var temp=0;
-          for(var i=0;i<reward_data.length;i++){
-            temp+=reward_data[i];
-          }
-          reward.innerHTML = temp;
-          r_t.innerHTML = (temp/(this.value)).toFixed(2);
-          if(this.value==0){
-            console.log("sdads");
-            d3.select("svg").selectAll("path.circle").remove();
-          }else{
-            draw_obj(this.value-1);
-          }
-        }
-},1000);
-
-}
-    $.ajax({
-      url: "data/",
-      success: function(data){
-         $(data).find("a:contains(.json)").each(function(){
-            // will loop through 
-            $('<option></option>').html($(this).attr("href")).appendTo('#sel1');
-            $('<option></option>').html($(this).attr("href")).appendTo('#sel2');
-         });
-      }
-    });
-    $('#submit').on('click', function() {
-        $('#pre').hide();
+function pre_process(){
+    $('#pre').hide();
         document.getElementById("loader").style.display = "block";
-        sta=$("#sel1").val();
-        var ob=$("#sel2").val();
+        if(sta==undefined&&ob==undefined){
+            sta=$("#sel1").val();
+            ob=$("#sel2").val();
+        }
+        
         var gridData = setGridData();  
         var filedata;
+        console.log(sta);
+        console.log(ob);
         setTimeout(function(){ 
             filedata=gridData[1];
             gridData=gridData[0];
@@ -461,7 +402,7 @@ function process(gridData){
                 .attr("width", function(d) { return d.width; })
                 .attr("height", function(d) { return d.height; })
                 .style("fill", "#fff")
-                .style("stroke", "#222");
+                .style("stroke", "#e5e5e5");
             for(var i=0;i<gridData.length*gridData.length;i++){
                 var element=document.getElementById("case_"+String(i));
                 var mark = element.getAttribute("mark");
@@ -540,6 +481,95 @@ function process(gridData){
         process(gridData);
             });
         }, 1000);
+}
+function process(gridData){
+    // var circle_data=[];
+    // var data=JSON.parse(localStorage.getItem("ob_data"));
+    var data=ob_data;
+    // var data_index=0;
+    for(var i=0;i<data.length;i++){
+        var data_index=0;
+        var position=data[i][3][0];
+        var temp_data=new Array();
+        for(var j=0;j<position.length;j++){
+            var x=position[j][0];
+            var y=position[j][1];
+            var element=document.getElementById("case_"+String(x*gridData.length+y));
+            var x1=parseInt(element.getAttribute("x"));
+            var y1=parseInt(element.getAttribute("y"));
+            var width=parseInt(element.getAttribute("width"));
+            temp_data[data_index]={
+                x: x1+width/2, 
+                y: y1+width/2, 
+                r: width/2, 
+                fill: data[i][4][0][data_index]
+                }
+            data_index++;
+        }
+       circle_data.push(temp_data);
+    }
+    // localStorage.setItem("circle_data",JSON.stringify(circle_data));
+    $("#side_status").append("<h3>Timestep: <span id='demo'></span></h3>");
+    $("#side_status").append("<h3>Reward: <span id='reward'></span> </h3>");
+    $("#side_status").append("<h3>R/T: <span id='r_t'></span> </h3>");
+    $("#side_status").append("<div class='slidecontainer'>"+
+      "<input type='range' min='0' max="+circle_data.length+" value='0' class='slider' id='myRange'>"+
+      "<p>Timestep: <span id='demo1'></span></p>"+
+    '</div>');
+    $("#side_status").append("<button onclick='change_data()' type='button' class='btn btn-primary'>Change Data</button>");
+     // document.getElementById("main").style.display = "block";
+    document.getElementById("loader").style.display = "none";
+    setTimeout(function(){
+        var slider = document.getElementById("myRange");
+        var output = document.getElementById("demo");
+        var output1 = document.getElementById("demo1");
+        var reward = document.getElementById("reward");
+        var r_t = document.getElementById("r_t");
+        output.innerHTML = slider.value;
+        output1.innerHTML = slider.value;
+        reward.innerHTML = slider.value;
+        r_t.innerHTML = slider.value;
+
+
+        slider.oninput = function() {
+          output.innerHTML = this.value;
+          output1.innerHTML = this.value;
+          if(this.value!=0){
+            var reward_data=data[this.value-1][1][0];
+        }else{
+            var reward_data=0
+        }
+          
+          var temp=0;
+          for(var i=0;i<reward_data.length;i++){
+            temp+=reward_data[i];
+          }
+          reward.innerHTML = temp;
+          r_t.innerHTML = (temp/(this.value)).toFixed(2);
+          if(this.value==0){
+            d3.select("svg").selectAll("path.circle").remove();
+          }else{
+            draw_obj(this.value-1);
+          }
+        }
+
+         // $("#side_status").append(console.log(ob_data));
+        console.log(ob_data);
+},1000);
+
+}
+    $.ajax({
+      url: "data/",
+      success: function(data){
+         $(data).find("a:contains(.json)").each(function(){
+            // will loop through 
+            $('<option></option>').html($(this).attr("href")).appendTo('#sel1');
+            $('<option></option>').html($(this).attr("href")).appendTo('#sel2');
+         });
+      }
+    });
+    $('#submit').on('click', function() {
+        pre_process();
 });
     $('#upload').on('click', function() {
         $('#message').empty();
