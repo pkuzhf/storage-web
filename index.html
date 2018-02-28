@@ -18,19 +18,6 @@
     body {
         text-align: left;
     }
-    /* #container {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        text-align: center;
-    }
-    p, #overlay {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    } */
     #overlay {
         position: relative;
         display: inline-block;
@@ -219,6 +206,8 @@
 </body>
 <script type="text/javascript">
     var sta;
+    var circle_data=[];
+    var ob_data=[];
     var set_color=new Array();
 function circleGen() {
   //set defaults
@@ -256,7 +245,7 @@ function random_rgba() {
     return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
 }
 function draw_obj(j){
-    var circle_data = JSON.parse(localStorage.getItem("circle_data"));
+    // var circle_data = JSON.parse(localStorage.getItem("circle_data"));
     d3.select("svg").selectAll("path.circle").remove();
      var svg = d3.select("svg");
     var myC = circleGen()
@@ -271,7 +260,7 @@ function draw_obj(j){
         .style("stroke", "#000000")
         .style("fill", function(d) { 
             if(d.fill==-1){
-                return "gray";
+                return "rgb(220,220,220)";
             }else{
                 return set_color[d.fill];
             }});
@@ -356,40 +345,33 @@ function setGridData() {
 // I like to log the data to the console for quick debugging
 
 function process(gridData){
-    var circle_data=[];
-    var data=JSON.parse(localStorage.getItem("ob_data"));
+    // var circle_data=[];
+    // var data=JSON.parse(localStorage.getItem("ob_data"));
+    var data=ob_data;
     // var data_index=0;
     for(var i=0;i<data.length;i++){
         var data_index=0;
         var position=data[i][3][0];
         var temp_data=new Array();
         for(var j=0;j<position.length;j++){
-            for(var k=0;k<gridData.length*gridData.length;k++){
-                var element=document.getElementById("case_"+String(k));
-                var value = element.getAttribute("value");
-                value=value.split(",");
-                var x=parseInt(value[0]);
-                var y=parseInt(value[1]);
-                if (x==position[j][0]&&y==position[j][1]) {
-                    // console.log(x+"__"+y);
-                    // var svg = d3.select("#case_"+String(i));
-                    var x1=parseInt(element.getAttribute("x"));
-                    var y1=parseInt(element.getAttribute("y"));
-                    var width=parseInt(element.getAttribute("width"));
-                    temp_data[data_index]={
-                        x: x1+width/2, 
-                        y: y1+width/2, 
-                        r: width/2, 
-                        fill: data[i][4][0][data_index]
-                        }
-                    data_index++;
+            var x=position[j][0];
+            var y=position[j][1];
+            var element=document.getElementById("case_"+String(x*gridData.length+y));
+            var x1=parseInt(element.getAttribute("x"));
+            var y1=parseInt(element.getAttribute("y"));
+            var width=parseInt(element.getAttribute("width"));
+            temp_data[data_index]={
+                x: x1+width/2, 
+                y: y1+width/2, 
+                r: width/2, 
+                fill: data[i][4][0][data_index]
                 }
-            }
+            data_index++;
         }
        circle_data.push(temp_data);
     }
     console.log(circle_data);
-    localStorage.setItem("circle_data",JSON.stringify(circle_data));
+    // localStorage.setItem("circle_data",JSON.stringify(circle_data));
     $("#side_status").append("<h3>Timestep: <span id='demo'></span></h3>");
     $("#side_status").append("<h3>Reward: <span id='reward'></span> </h3>");
     $("#side_status").append("<h3>R/T: <span id='r_t'></span> </h3>");
@@ -435,7 +417,7 @@ function process(gridData){
           }
         }
 },1000);
-    // $("#side_status").append("<button type='button' class='btn btn-primary' onclick='draw_obj()'>next</button>");
+
 }
     $.ajax({
       url: "data/",
@@ -492,7 +474,7 @@ function process(gridData){
                     var x1=parseInt(element.getAttribute("x"));
                     var y1=parseInt(element.getAttribute("y"));
                     var width=parseInt(element.getAttribute("width"));
-                    // var line = svg.selectAll('path')
+                    
                     svg.append('path')
                     .style("stroke", "black")  // colour the line
                     .style("fill", "none")
@@ -501,14 +483,11 @@ function process(gridData){
                 }
             }
             $.getJSON("data/"+ob, function(json) {
-                // console.log(json);
-                localStorage.setItem("ob_data", JSON.stringify(json));
-            });
-            console.log(JSON.parse(localStorage.getItem("ob_data")));
+                ob_data=json;
             $("#side_status").append("<h3>Map Size:["+String(filedata[0])+"]</h3>");
             $("#side_status").append("<h3>Hole Number: "+String(filedata[3].length)+"</h3>");
             $("#side_status").append("<h3>Source Number: "+String(filedata[2].length)+"</h3>");
-            $("#side_status").append("<h3>Agent Number: "+String(JSON.parse(localStorage.getItem("ob_data"))[0][0][0].length)+"</h3>");
+            $("#side_status").append("<h3>Agent Number: "+String(ob_data[0][0][0].length)+"</h3>");
             $("#side_status").append("<h3>City Distridution: </h3>");
 
             var w = 300,                        //width
@@ -559,7 +538,7 @@ function process(gridData){
                     .text(function(d, i) { return pie_data[i].label; });        //get the label from our original data array
 
         process(gridData);
-            
+            });
         }, 1000);
 });
     $('#upload').on('click', function() {
@@ -587,7 +566,9 @@ function change_data(){
     $('#plain-grid').empty();
     $('#side_status').empty();
     $('#pre').show();
-    localStorage.clear();
+    circle_data=[];
+    ob_data=[];
+    set_color=new Array();
 }
 </script>
 </html>
