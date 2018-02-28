@@ -408,7 +408,7 @@ function pre_process(){
                 var mark = element.getAttribute("mark");
                 var color = element.getAttribute("color");
                 if(mark==2){
-                    element.setAttribute("style","fill:"+set_color[parseInt(element.getAttribute("color"))]+";"+"stroke:rgb(34, 34, 34);");
+                    element.setAttribute("style","fill:"+set_color[parseInt(element.getAttribute("color"))]+";"+"stroke:#e5e5e5;");
                 }
                 if(mark==1){
                     var svg = d3.select("svg");
