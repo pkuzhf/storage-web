@@ -7,6 +7,7 @@
     
     
     <script src="js/jquery-3.3.1.js"></script>
+    <script src="js/ip.js"></script>
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src='http://d3js.org/d3.v2.js'></script>
 
@@ -169,27 +170,40 @@
     <div id="pre" >
 <div class="row justify-content-center" style="padding-top: 300px;">
     <div class="col-4">
-        <h5>choose sta file</h5>
+        <h5>Choose sta file</h5>
      <select class="form-control" id="sel1">
-        <option>choose sta file</option>
+        <option>Choose sta file</option>
         
       </select>
     </div>
     <div class="col-4">
-        <h5>choose ob file</h5>
+        <h5>Choose ob file</h5>
       <select class="form-control" id="sel2">
-        <option>choose ob file</option>
+        <option>Choose ob file</option>
         
       </select>
     </div>
-    <button id="submit" type="button" class="btn btn-primary" style="margin-left: 10px;">Submit</button>
+    <button id="submit" type="button" class="btn btn-primary" style="margin-left: 5px;margin-top: 30px;width: 77.92px; height:38px;">Submit</button>
   </div>
 
-<div class="row justify-content-left" style="padding-top: 200px; padding-left: 300px;">
-<form action="upload.php" method="post" enctype="multipart/form-data">
-    <input type="file" name="fileToUpload" id="fileToUpload">
-    <button id="upload" type="button" class="btn btn-primary">Upload</button>
-</form>
+<div class="row justify-content-left" style="padding-top: 20px; padding-left: 260px;">
+    <div class="col-left" >
+    <form action="upload.php" method="post" enctype="multipart/form-data">
+        <input type="file" name="fileToUpload" id="fileToUpload">
+    </form>
+    </div>
+<div class="col col-lg-2" style="margin-left: -100px; margin-top: -5px;">
+      <select class="form-control" id="sel3">
+        <option>choose file type</option>
+        <option>sta</option>
+        <option>ob</option>
+      </select>
+    </div>
+    <div class="col" style="margin-left:-20px;margin-top: -5px;">
+      <button id="upload" type="button" class="btn btn-primary">Upload</button>
+    </div>
+
+    
 <div id="message" class="row justify-content-left" style="padding-top: 50px;padding-right: 300px;"></div>
   </div>
 </div>
@@ -292,7 +306,7 @@ function setGridData() {
     var data = new Array();
     
 
-    $.getJSON("data/"+sta, function(json) {
+    $.getJSON("sta/"+sta, function(json) {
     console.log(json); 
     allData[1]=json;
     //set color
@@ -369,8 +383,12 @@ function pre_process(){
     $('#pre').hide();
         document.getElementById("loader").style.display = "block";
         if(sta==undefined&&ob==undefined){
-            sta=$("#sel1").val();
+            sta=String($("#sel1").val());
             ob=$("#sel2").val();
+            console.log(sta);
+            sta=sta.split(".",1);
+            ob=ob.split(".",1);
+            document.location.href=ip+"?sta="+sta+"&ob="+ob;
         }
         
         var gridData = setGridData();  
@@ -423,7 +441,7 @@ function pre_process(){
                     .attr("d", "M" +String(x1+width/2)+","+String(y1)+"," +"L" +String(x1)+","+String(y1+width)+","+ "L"+String(x1+width)+","+String(y1+width)+ "Z");
                 }
             }
-            $.getJSON("data/"+ob, function(json) {
+            $.getJSON("ob/"+ob, function(json) {
                 ob_data=json;
             $("#side_status").append("<h3>Map Size:["+String(filedata[0])+"]</h3>");
             $("#side_status").append("<h3>Hole Number: "+String(filedata[3].length)+"</h3>");
@@ -559,11 +577,20 @@ function process(gridData){
 
 }
     $.ajax({
-      url: "data/",
+      url: "sta/",
       success: function(data){
          $(data).find("a:contains(.json)").each(function(){
             // will loop through 
             $('<option></option>').html($(this).attr("href")).appendTo('#sel1');
+            
+         });
+      }
+    });
+    $.ajax({
+      url: "ob/",
+      success: function(data){
+         $(data).find("a:contains(.json)").each(function(){
+            // will loop through 
             $('<option></option>').html($(this).attr("href")).appendTo('#sel2');
          });
       }
@@ -574,10 +601,13 @@ function process(gridData){
     $('#upload').on('click', function() {
         $('#message').empty();
     var file_data = $('#fileToUpload').prop('files')[0];   
-    var form_data = new FormData();                  
-    form_data.append('file', file_data);                          
+    var form_data = new FormData(); 
+    var type=$("#sel3").val()+'/'; 
+    console.log(type);                
+    form_data.append('file', file_data);  
+    console.log(form_data);                         
     $.ajax({
-        url: 'upload.php', // point to server-side PHP script 
+        url: 'upload.php?type='+type, // point to server-side PHP script 
         dataType: 'text',  // what to expect back from the PHP script, if anything
         cache: false,
         contentType: false,
@@ -593,7 +623,7 @@ function process(gridData){
      });
 });
 function change_data(){
-    location.reload();
+    document.location.href=ip;
 }
 </script>
 </html>
