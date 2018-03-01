@@ -3,6 +3,7 @@ if ( 0 < $_FILES['file']['error'] ) {
         echo 'Error: ' . $_FILES['file']['error'] . '<br>';
     }
     else {
-        move_uploaded_file($_FILES['file']['tmp_name'], 'data/' . $_FILES['file']['name']);
+    	echo 'Error: ' . $_FILES['file'] . '<br>';
+        move_uploaded_file($_FILES['file']['tmp_name'], $_GET['type'] . $_FILES['file']['name']);
     }
 ?>
