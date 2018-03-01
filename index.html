@@ -168,7 +168,7 @@
 <body>
     <div id="loader" style="display:none;"></div>
     <div id="pre" >
-<div class="row justify-content-center" style="padding-top: 300px;">
+<div class="row justify-content-center" style="padding-top: 10px;">
     <div class="col-4">
         <h5>Choose sta file</h5>
      <select class="form-control" id="sel1">
@@ -186,7 +186,7 @@
     <button id="submit" type="button" class="btn btn-primary" style="margin-left: 5px;margin-top: 30px;width: 77.92px; height:38px;">Submit</button>
   </div>
 
-<div class="row justify-content-left" style="padding-top: 20px; padding-left: 260px;">
+<!-- <div class="row justify-content-left" style="padding-top: 20px; padding-left: 260px;">
     <div class="col-left" >
     <form action="upload.php" method="post" enctype="multipart/form-data">
         <input type="file" name="fileToUpload" id="fileToUpload">
@@ -205,8 +205,8 @@
 
     
 <div id="message" class="row justify-content-left" style="padding-top: 50px;padding-right: 300px;"></div>
-  </div>
-</div>
+  </div>-->
+</div> 
 <div id="main" class="row">
   <div class="col-sm-7" style="margin-top: 20px; margin-left: 20px;">
     <div id="plain-grid">
@@ -240,6 +240,9 @@
     var set_color=new Array();
      if (sta!=null&&ob!=null) {
         sta+='.json';
+        if(ob.includes("/")){
+            ob=ob.split("/",1);
+        }
         ob+='.json';
         pre_process();
     }
@@ -296,7 +299,7 @@ function draw_obj(j){
         .style("stroke", "#000000")
         .style("fill", function(d) { 
             if(d.fill==-1){
-                return "rgb(220,220,220)";
+                return "white";
             }else{
                 return set_color[d.fill];
             }});
@@ -534,9 +537,10 @@ function process(gridData){
       "<input type='range' min='0' max="+circle_data.length+" value='0' class='slider' id='myRange'>"+
       "<p>Timestep: <span id='demo1'></span></p>"+
     '</div>');
-    $("#side_status").append("<button onclick='change_data()' type='button' class='btn btn-primary'>Change Data</button>");
+    $("#side_status").append("<button id='test' onclick='change_data()' type='button' class='btn btn-primary'>Change Data</button>");
      // document.getElementById("main").style.display = "block";
     document.getElementById("loader").style.display = "none";
+    // document.getElementsByClassName("myRange")[0].click();
     setTimeout(function(){
         var slider = document.getElementById("myRange");
         var output = document.getElementById("demo");
@@ -573,6 +577,13 @@ function process(gridData){
 
          // $("#side_status").append(console.log(ob_data));
         console.log(ob_data);
+        // document.getElementById("test")[0].click();
+        // $( "#myRange" ).trigger( "slidechange" );
+        $('#myRange').slider("value", 1);
+        $('#myRange').trigger('slidestart');
+        $('#myRange').trigger('slidechange');
+        $('#myRange').trigger('slidestop');
+
 },1000);
 
 }
