@@ -342,7 +342,7 @@ function setGridData() {
                 var b=json[2][j][1];
                 
                 
-                if(a==row && b==column){
+                if(b==row && a==column){
                     temp=1;
                     
                 }
@@ -350,7 +350,7 @@ function setGridData() {
             for(var j=0;j<json[3].length;j++){
                 var a=json[3][j][0];
                 var b=json[3][j][1];
-                if(a==row && b==column){
+                if(b==row && a==column){
                     temp=2;
                     index=json[4][j];
                 }
@@ -481,17 +481,17 @@ function pre_process(){
             //   .attr("stroke-width", 1)
             //   .attr("stroke", "black")
             //   .attr("marker-end", "url(#triangle)");
-            d3.select("svg").append("svg:defs").append("svg:marker")
-            .attr("id", "triangle")
-            .attr("refX", 6)
-            .attr("refY", 6)
-            .attr("markerWidth", 30)
-            .attr("markerHeight", 30)
-            .attr("markerUnits","userSpaceOnUse")
-            .attr("orient", "auto")
-            .append("path")
-            .attr("d", "M 0 0 12 6 0 12 3 6")
-            .style("fill", "black");
+            // d3.select("svg").append("svg:defs").append("svg:marker")
+            // .attr("id", "triangle")
+            // .attr("refX", 6)
+            // .attr("refY", 6)
+            // .attr("markerWidth", 30)
+            // .attr("markerHeight", 30)
+            // .attr("markerUnits","userSpaceOnUse")
+            // .attr("orient", "auto")
+            // .append("path")
+            // .attr("d", "M 0 0 12 6 0 12 3 6")
+            // .style("fill", "black");
 
             for(var i=0;i<gridData.length*gridData.length;i++){
                 var element=document.getElementById("case_"+String(i));
@@ -509,11 +509,11 @@ function pre_process(){
                      // .attr("y1", y+width/2)
                      // .attr("x2", x+width-20)
                      // .attr("y2", y+width/2)  
-                     .attr("x1", x+width-15)
+                     .attr("x1", x+width-width/(40/15))
                      .attr("y1", y+width/2)
-                     .attr("x2", x+width-5)
+                     .attr("x2", x+width-width/8)
                      .attr("y2", y+width/2) 
-                     .attr("stroke","red")  
+                     .attr("stroke","#C0C0C0")  
                      .attr("stroke-width",2)  
                      .attr("marker-end","url(#triangle)");  
 
@@ -521,10 +521,10 @@ function pre_process(){
                 if(arrow[1]==1){
                     var line = d3.select("svg").append("line") 
                      .attr("x1", x+width/2)
-                     .attr("y1", y+15)
+                     .attr("y1", y+width/(40/15))
                      .attr("x2", x+width/2)
-                     .attr("y2", y+5) 
-                     .attr("stroke","red")  
+                     .attr("y2", y+width/8) 
+                     .attr("stroke","#C0C0C0")  
                      .attr("stroke-width",2)  
                      .attr("marker-end","url(#triangle)");  
                     
@@ -536,11 +536,11 @@ function pre_process(){
                      // .attr("y1", y+width/2)
                      // .attr("x2", x+width-20)
                      // .attr("y2", y+width/2)  
-                     .attr("x1", x+15)
+                     .attr("x1", x+width/(40/15))
                      .attr("y1", y+width/2)
-                     .attr("x2", x+5)
+                     .attr("x2", x+width/8)
                      .attr("y2", y+width/2) 
-                     .attr("stroke","red")  
+                     .attr("stroke","#C0C0C0")  
                      .attr("stroke-width",2)  
                      .attr("marker-end","url(#triangle)");  
                     
@@ -553,10 +553,10 @@ function pre_process(){
                      // .attr("x2", x+width-20)
                      // .attr("y2", y+width/2)  
                      .attr("x1", x+width/2)
-                     .attr("y1", y-15)
+                     .attr("y1", y-width/(40/15))
                      .attr("x2", x+width/2)
-                     .attr("y2", y-5) 
-                     .attr("stroke","red")  
+                     .attr("y2", y-width/8) 
+                     .attr("stroke","#C0C0C0")  
                      .attr("stroke-width",2)  
                      .attr("marker-end","url(#triangle)");   
                     
@@ -650,7 +650,7 @@ function process(gridData){
         for(var j=0;j<position.length;j++){
             var x=position[j][0];
             var y=position[j][1];
-            var element=document.getElementById("case_"+String(x*gridData.length+y));
+            var element=document.getElementById("case_"+String(x+gridData.length*y));
             var x1=parseInt(element.getAttribute("x"));
             var y1=parseInt(element.getAttribute("y"));
             var width=parseInt(element.getAttribute("width"));
