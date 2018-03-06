@@ -117,49 +117,49 @@
 }
 
 #loader {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 1;
-  width: 150px;
-  height: 150px;
-  margin: -75px 0 0 -75px;
-  border: 16px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 16px solid #3498db;
-  width: 120px;
-  height: 120px;
-  -webkit-animation: spin 2s linear infinite;
-  animation: spin 2s linear infinite;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
 }
 
 @-webkit-keyframes spin {
-  0% { -webkit-transform: rotate(0deg); }
-  100% { -webkit-transform: rotate(360deg); }
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* Add animation to "page content" */
 .animate-bottom {
-  position: relative;
-  -webkit-animation-name: animatebottom;
-  -webkit-animation-duration: 1s;
-  animation-name: animatebottom;
-  animation-duration: 1s
+    position: relative;
+    -webkit-animation-name: animatebottom;
+    -webkit-animation-duration: 1s;
+    animation-name: animatebottom;
+    animation-duration: 1s
 }
 
 @-webkit-keyframes animatebottom {
-  from { bottom:-100px; opacity:0 } 
-  to { bottom:0px; opacity:1 }
+    from { bottom:-100px; opacity:0 } 
+    to { bottom:0px; opacity:1 }
 }
 
 @keyframes animatebottom { 
-  from{ bottom:-100px; opacity:0 } 
-  to{ bottom:0; opacity:1 }
+    from{ bottom:-100px; opacity:0 } 
+    to{ bottom:0; opacity:1 }
 }
 
 
@@ -171,20 +171,20 @@
 <div class="row justify-content-center" style="padding-top: 10px;">
     <div class="col-4">
         <h5>Choose sta file</h5>
-     <select class="form-control" id="sel1">
+        <select class="form-control" id="sel1">
         <option>Choose sta file</option>
         
-      </select>
+        </select>
     </div>
     <div class="col-4">
         <h5>Choose ob file</h5>
-      <select class="form-control" id="sel2">
+        <select class="form-control" id="sel2">
         <option>Choose ob file</option>
         
-      </select>
+        </select>
     </div>
     <button id="submit" type="button" class="btn btn-primary" style="margin-left: 5px;margin-top: 30px;width: 77.92px; height:38px;">Submit</button>
-  </div>
+</div>
 
 <!-- <div class="row justify-content-left" style="padding-top: 20px; padding-left: 260px;">
     <div class="col-left" >
@@ -220,19 +220,19 @@
 </body>
 <script type="text/javascript">
     var getUrlParameter = function getUrlParameter(sParam) {
-    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-        sURLVariables = sPageURL.split('&'),
-        sParameterName,
-        i;
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
 
-    for (i = 0; i < sURLVariables.length; i++) {
-        sParameterName = sURLVariables[i].split('=');
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
 
-        if (sParameterName[0] === sParam) {
-            return sParameterName[1] === undefined ? true : sParameterName[1];
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : sParameterName[1];
+            }
         }
-    }
-};
+    };
     var sta=getUrlParameter('sta');
     var ob=getUrlParameter('ob');
     var circle_data=[];
@@ -248,161 +248,142 @@
     }
 
 
-function circleGen() {
-  //set defaults
-  var r = function(d) { return d.radius; },
-      x = function(d) { return d.x; },
-      y = function(d) { return d.y; };
-  
-  //returned function to generate circle path
-  function circle(d) {
-    var cx = d3.functor(x).call(this, d),
-        cy = d3.functor(y).call(this, d),
-        myr = d3.functor(r).call(this, d);
-
-    return "M" + cx + "," + cy + " " +
-           "m" + -myr + ", 0 " +
-           "a" + myr + "," + myr + " 0 1,0 " + myr*2  + ",0 " +
-           "a" + myr + "," + myr + " 0 1,0 " + -myr*2 + ",0Z";
-  }
-  
-  //getter-setter methods
-  circle.r = function(value) {
-    if (!arguments.length) return r; r = value; return circle;
-  };  
-  circle.x = function(value) {
-    if (!arguments.length) return x; x = value; return circle;
-  };  
-  circle.y = function(value) {
-    if (!arguments.length) return y; y = value; return circle;
-  };
-  
-  return circle;
-}
-function random_rgba() {
-    var o = Math.round, r = Math.random, s = 255;
-    return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
-}
-function draw_obj(j){
-    // var circle_data = JSON.parse(localStorage.getItem("circle_data"));
-    d3.select("svg").selectAll("path.circle").remove();
-     var svg = d3.select("svg");
-    var myC = circleGen()
-       .x(function(d) { return d.x; })
-       .y(function(d) { return d.y; })
-       .r(function(d) { return d.r; });
-    svg.selectAll("path.circle")
-        .data(circle_data[j])
-      .enter().append("path")
-        .attr("class", "circle")
-        .attr("d", myC)
-        .style("stroke", "#000000")
-        .style("fill", function(d) { 
-            if(d.fill==-1){
-                return "white";
-            }else{
-                return set_color[d.fill];
-            }});
-}
-function setGridData() {
-    var allData=new Array();
-    var data = new Array();
-    
-
-    $.getJSON("sta/"+sta, function(json) {
-    console.log(json); 
-    allData[1]=json;
-    //set color
-
-    for (var i =0 ; i <json[1].length; i++) {
-        set_color.push(random_rgba());
-    }
-
-    // this will show the info it in firebug console
-    
-   
-    
-    var xpos = 1; //starting xpos and ypos at 1 so the stroke will show when we make the grid below
-    var ypos = 1;
-    var width = 800/parseInt(json[0][0]);
-    var height = 800/parseInt(json[0][1]);
-    
-    // iterate for rows 
-    var i=0;
-
-    for (var row = 0; row < parseInt(json[0][0]); row++) {
-        data.push( new Array() );
+    function circleGen() {
+      //set defaults
+        var r = function(d) { return d.radius; },
+            x = function(d) { return d.x; },
+            y = function(d) { return d.y; };
         
-        // iterate for cells/columns inside rows
-        for (var column = 0; column < parseInt(json[0][1]); column++) {
-            var temp=0;
-            var index=-1;
-            for(var j=0;j<json[2].length;j++){
-                var a=json[2][j][0];
-                var b=json[2][j][1];
-                
-                
-                if(b==row && a==column){
-                    temp=1;
-                    
-                }
-            }
-            for(var j=0;j<json[3].length;j++){
-                var a=json[3][j][0];
-                var b=json[3][j][1];
-                if(b==row && a==column){
-                    temp=2;
-                    index=json[4][j];
-                }
+        //returned function to generate circle path
+        function circle(d) {
+            var cx = d3.functor(x).call(this, d),
+                cy = d3.functor(y).call(this, d),
+                myr = d3.functor(r).call(this, d);
 
-            }
-            data[row].push({
-                id: i,
-                x: xpos,
-                y: ypos,
-                width: width,
-                height: height,
-                value:[row,column],
-                mark:temp,
-                color:index,
-                arrow:json[5][row][column]
-            })
-            // increment the x position. I.e. move it over by 50 (width variable)
-            xpos += width;
-            i++;
-        }
-        // reset the x position after a row is complete
-        xpos = 1;
-        // increment the y position for the next row. Move it down 50 (height variable)
-        ypos += height; 
-    }
-    });
-    allData[0]=data;
-    console.log(data);
-    return allData;
-}
-
-
-// I like to log the data to the console for quick debugging
-function pre_process(){
-    $('#pre').hide();
-        document.getElementById("loader").style.display = "block";
-        if(sta==undefined&&ob==undefined){
-            sta=String($("#sel1").val());
-            ob=$("#sel2").val();
-            console.log(sta);
-            sta=sta.split(".",1);
-            ob=ob.split(".",1);
-            document.location.href=ip+"?sta="+sta+"&ob="+ob;
+          return "M" + cx + "," + cy + " " +
+                 "m" + -myr + ", 0 " +
+                 "a" + myr + "," + myr + " 0 1,0 " + myr*2  + ",0 " +
+                 "a" + myr + "," + myr + " 0 1,0 " + -myr*2 + ",0Z";
         }
         
-        var gridData = setGridData();  
-        var filedata;
-        console.log(sta);
-        console.log(ob);
-        setTimeout(function(){ 
-            filedata=gridData[1];
-            gridData=gridData[0];
+        //getter-setter methods
+        circle.r = function(value) {
+            if (!arguments.length) return r; r = value; return circle;
+        };  
+        circle.x = function(value) {
+            if (!arguments.length) return x; x = value; return circle;
+        };  
+        circle.y = function(value) {
+            if (!arguments.length) return y; y = value; return circle;
+        };
+        
+        return circle;
+    }
+    function random_rgba() {
+        var o = Math.round, r = Math.random, s = 255;
+        return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
+    }
+    function draw_obj(j){
+        // var circle_data = JSON.parse(localStorage.getItem("circle_data"));
+        d3.select("svg").selectAll("path.circle").remove();
+            var svg = d3.select("svg");
+        var myC = circleGen()
+            .x(function(d) { return d.x; })
+            .y(function(d) { return d.y; })
+            .r(function(d) { return d.r; });
+        svg.selectAll("path.circle")
+            .data(circle_data[j])
+            .enter().append("path")
+            .attr("class", "circle")
+            .attr("d", myC)
+            .style("stroke", "#000000")
+            .style("fill", function(d) { 
+                if(d.fill==-1){
+                    return "white";
+                }else{
+                    return set_color[d.fill];
+                }});
+    }
+    function setGridData() {
+        var allData=new Array();
+        var data = new Array();
+        
+
+        $.getJSON("sta/"+sta, function(json) {
+            //console.log(json); 
+            allData[1]=json;
+            //set color
+
+            for (var i =0 ; i <json[1].length; i++) {
+                set_color.push(random_rgba());
+            }
+
+            // this will show the info it in firebug console
+            
+           
+            
+            var xpos = 1; //starting xpos and ypos at 1 so the stroke will show when we make the grid below
+            var ypos = 1;
+            var width = 800/parseInt(json[0][0]);
+            var height = 800/parseInt(json[0][1]);
+            
+            // iterate for rows 
+            var i=0;
+
+            for (var row = 0; row < parseInt(json[0][0]); row++) {
+                data.push( new Array() );
+                
+                // iterate for cells/columns inside rows
+                for (var column = 0; column < parseInt(json[0][1]); column++) {
+                    var temp=0;
+                    var index=-1;
+                    for(var j=0;j<json[2].length;j++){
+                        var a=json[2][j][0];
+                        var b=json[2][j][1];
+                        
+                        
+                        if(b==row && a==column){
+                            temp=1;
+                            
+                        }
+                    }
+                    for(var j=0;j<json[3].length;j++){
+                        var a=json[3][j][0];
+                        var b=json[3][j][1];
+                        if(b==row && a==column){
+                            temp=2;
+                            index=json[4][j];
+                        }
+
+                    }
+                    data[row].push({
+                        id: i,
+                        x: xpos,
+                        y: ypos,
+                        width: width,
+                        height: height,
+                        value:[row,column],
+                        mark:temp,
+                        color:index,
+                        arrow:json[5][row][column]
+                    })
+                    // increment the x position. I.e. move it over by 50 (width variable)
+                    xpos += width;
+                    i++;
+                }
+                // reset the x position after a row is complete
+                xpos = 1;
+                // increment the y position for the next row. Move it down 50 (height variable)
+                ypos += height; 
+            }
+        
+            allData[0]=data;
+            //console.log(data);
+            var filedata;
+            //console.log(sta);
+            //console.log(ob);
+            filedata=allData[1];
+            gridData=allData[0];
             var plaingrid = d3.select("#plain-grid")
                 .append("svg")
                 .attr("id","my_svg")
@@ -429,70 +410,6 @@ function pre_process(){
                 .style("fill", "#fff")
                 .style("stroke", "#e5e5e5");
 
-
-            // $("#my_svg").append(" <defs><marker id='arrow'"
-            //      +" markerUnits='strokeWidth'"
-            //       +" markerWidth='12'"
-            //       +" markerHeight='12'"
-            //       +" viewBox='0 0 12 12'"
-            //      +" refX='6'"
-            //       +" refY='6'"
-            //       +" orient='auto'>"
-            //       +"<path d='M2,2 L10,6 L2,10 L6,6 L2,2' style='fill: #f00;'></path>"
-            //           +"</marker>"
-            //   +"</defs>");
-
-            // var line = d3.select("svg").append("line")
-            // .data(gridData)
-            //  .attr("x1", function(d) { return d.x; })
-            //  .attr("y1", function(d) { return d.y; })
-            //  .attr("x2", function(d) { return d.x+50; })
-            //  .attr("y2", function(d) { return d.y+50; })  
-            //  .attr("stroke","red")  
-            //  .attr("stroke-width",2)  
-            //  .attr("marker-end","url(#arrow)"); 
-    //         d3.select("svg").append("svg:defs").append("svg:marker")
-    // .attr("id", "triangle")
-    // .attr("refX", 15)
-    // .attr("refY", -1.5)
-    // .attr("markerWidth", 6)
-    // .attr("markerHeight", 6)
-    // .attr("orient", "auto")
-    // .append("path")
-    // .attr("d", "M 0 -5 10 10")
-    // .style("stroke", "black"); 
-    //         d3.select("svg").append("svg:defs").append("svg:marker")
-    // .attr("id", "triangle")
-    // .attr("refX", 6)
-    // .attr("refY", 6)
-    // .attr("markerWidth", 30)
-    // .attr("markerHeight", 30)
-    // .attr("orient", "auto")
-    // .append("path")
-    // .attr("d", "M 0 0 12 6 0 12 3 6")
-    // .style("fill", "black");
-
-            // //line              
-            // d3.select("svg").append("line")
-            //   .attr("x1", 100)
-            //   .attr("y1", 100)
-            //   .attr("x2", 200)
-            //   .attr("y2", 100)          
-            //   .attr("stroke-width", 1)
-            //   .attr("stroke", "black")
-            //   .attr("marker-end", "url(#triangle)");
-            // d3.select("svg").append("svg:defs").append("svg:marker")
-            // .attr("id", "triangle")
-            // .attr("refX", 6)
-            // .attr("refY", 6)
-            // .attr("markerWidth", 30)
-            // .attr("markerHeight", 30)
-            // .attr("markerUnits","userSpaceOnUse")
-            // .attr("orient", "auto")
-            // .append("path")
-            // .attr("d", "M 0 0 12 6 0 12 3 6")
-            // .style("fill", "black");
-
             for(var i=0;i<gridData.length*gridData.length;i++){
                 var element=document.getElementById("case_"+String(i));
                 var mark = element.getAttribute("mark");
@@ -502,7 +419,7 @@ function pre_process(){
                 var y=parseInt(element.getAttribute("y"));
                 var width=parseInt(element.getAttribute("width"));
                 arrow=arrow.split(",")
-                console.log(arrow);
+                //console.log(arrow);
                 if(arrow[0]==1){
                     var line = d3.select("svg").append("line")
                      // .attr("x1", x+width-30)
@@ -581,196 +498,212 @@ function pre_process(){
             }
             $.getJSON("ob/"+ob, function(json) {
                 ob_data=json;
-            $("#side_status").append("<h3>Map Size:["+String(filedata[0])+"]</h3>");
-            $("#side_status").append("<h3>Hole Number: "+String(filedata[3].length)+"</h3>");
-            $("#side_status").append("<h3>Source Number: "+String(filedata[2].length)+"</h3>");
-            $("#side_status").append("<h3>Agent Number: "+String(ob_data[0][0][0].length)+"</h3>");
-            $("#side_status").append("<h3>City Distridution: </h3>");
+                $("#side_status").append("<h3>Map Size:["+String(filedata[0])+"]</h3>");
+                $("#side_status").append("<h3>Hole Number: "+String(filedata[3].length)+"</h3>");
+                $("#side_status").append("<h3>Source Number: "+String(filedata[2].length)+"</h3>");
+                $("#side_status").append("<h3>Agent Number: "+String(ob_data[0][0][0].length)+"</h3>");
+                $("#side_status").append("<h3>City Distridution: </h3>");
 
-            var w = 300,                        //width
-            h = 300,                            //height
-            r = 100,                            //radius
-            color = d3.scale.category20c();     //builtin range of colors
-            var pie_chart=filedata[1];
-            var pie_data=new Array();
-            for (var i = 0; i<pie_chart.length; i++) {
-                pie_data.push({
-                    label:String((pie_chart[i]*100).toFixed(2))+"%", 
-                    value:pie_chart[i]
-                })
-            }
-            
-            var vis = d3.select("#side_status")
-                .append("svg:svg")              //create the SVG element inside the <body>
-                .data([pie_data])                   //associate our data with the document
-                    .attr("width", w)           //set the width and height of our visualization (these will be attributes of the <svg> tag
-                    .attr("height", h)
-                .append("svg:g")                //make a group to hold our pie chart
-                    .attr("transform", "translate(" + r + "," + r + ")")    //move the center of the pie chart from 0, 0 to radius, radius
-
-            var arc = d3.svg.arc()              //this will create <path> elements for us using arc data
-                .outerRadius(r);
-
-            var pie = d3.layout.pie()           //this will create arc data for us given a list of values
-                .value(function(d) { return d.value; });    //we must tell it out to access the value of each element in our data array
-
-            var arcs = vis.selectAll("g.slice")     //this selects all <g> elements with class slice (there aren't any yet)
-                .data(pie)                          //associate the generated pie data (an array of arcs, each having startAngle, endAngle and value properties) 
-                .enter()                            //this will create <g> elements for every "extra" data element that should be associated with a selection. The result is creating a <g> for every object in the data array
-                    .append("svg:g")                //create a group to hold each slice (we will have a <path> and a <text> element associated with each slice)
-                        .attr("class", "slice");    //allow us to style things in the slices (like text)
-
-                arcs.append("svg:path")
-                        .attr("fill", function(d, i) { return set_color[i]; } ) //set the color for each slice to be chosen from the color function defined above
-                        .attr("d", arc);                                    //this creates the actual SVG path using the associated data (pie) with the arc drawing function
-
-                arcs.append("svg:text")                                     //add a label to each slice
-                        .attr("transform", function(d) {                    //set the label's origin to the center of the arc
-                        //we have to make sure to set these before calling arc.centroid
-                        d.innerRadius = 0;
-                        d.outerRadius = r;
-                        return "translate(" + arc.centroid(d) + ")";        //this gives us a pair of coordinates like [50, 50]
+                var w = 300,                        //width
+                h = 300,                            //height
+                r = 100,                            //radius
+                color = d3.scale.category20c();     //builtin range of colors
+                var pie_chart=filedata[1];
+                var pie_data=new Array();
+                for (var i = 0; i<pie_chart.length; i++) {
+                    pie_data.push({
+                        label:String((pie_chart[i]*100).toFixed(2))+"%", 
+                        value:pie_chart[i]
                     })
-                    .attr("text-anchor", "middle")                          //center the text on it's origin
-                    .text(function(d, i) { return pie_data[i].label; });        //get the label from our original data array
-
-        process(gridData);
-            });
-        }, 1000);
-}
-function process(gridData){
-    // var circle_data=[];
-    // var data=JSON.parse(localStorage.getItem("ob_data"));
-    var data=ob_data;
-    // var data_index=0;
-    for(var i=0;i<data.length;i++){
-        var data_index=0;
-        var position=data[i][3][0];
-        var temp_data=new Array();
-        for(var j=0;j<position.length;j++){
-            var x=position[j][0];
-            var y=position[j][1];
-            var element=document.getElementById("case_"+String(x+gridData.length*y));
-            var x1=parseInt(element.getAttribute("x"));
-            var y1=parseInt(element.getAttribute("y"));
-            var width=parseInt(element.getAttribute("width"));
-            temp_data[data_index]={
-                x: x1+width/2, 
-                y: y1+width/2, 
-                r: width/2, 
-                fill: data[i][4][0][data_index]
                 }
-            data_index++;
-        }
-       circle_data.push(temp_data);
+                
+                var vis = d3.select("#side_status")
+                    .append("svg:svg")              //create the SVG element inside the <body>
+                    .data([pie_data])                   //associate our data with the document
+                        .attr("width", w)           //set the width and height of our visualization (these will be attributes of the <svg> tag
+                        .attr("height", h)
+                    .append("svg:g")                //make a group to hold our pie chart
+                        .attr("transform", "translate(" + r + "," + r + ")")    //move the center of the pie chart from 0, 0 to radius, radius
+
+                var arc = d3.svg.arc()              //this will create <path> elements for us using arc data
+                    .outerRadius(r);
+
+                var pie = d3.layout.pie()           //this will create arc data for us given a list of values
+                    .value(function(d) { return d.value; });    //we must tell it out to access the value of each element in our data array
+
+                var arcs = vis.selectAll("g.slice")     //this selects all <g> elements with class slice (there aren't any yet)
+                    .data(pie)                          //associate the generated pie data (an array of arcs, each having startAngle, endAngle and value properties) 
+                    .enter()                            //this will create <g> elements for every "extra" data element that should be associated with a selection. The result is creating a <g> for every object in the data array
+                        .append("svg:g")                //create a group to hold each slice (we will have a <path> and a <text> element associated with each slice)
+                            .attr("class", "slice");    //allow us to style things in the slices (like text)
+
+                    arcs.append("svg:path")
+                            .attr("fill", function(d, i) { return set_color[i]; } ) //set the color for each slice to be chosen from the color function defined above
+                            .attr("d", arc);                                    //this creates the actual SVG path using the associated data (pie) with the arc drawing function
+
+                    arcs.append("svg:text")                                     //add a label to each slice
+                            .attr("transform", function(d) {                    //set the label's origin to the center of the arc
+                            //we have to make sure to set these before calling arc.centroid
+                            d.innerRadius = 0;
+                            d.outerRadius = r;
+                            return "translate(" + arc.centroid(d) + ")";        //this gives us a pair of coordinates like [50, 50]
+                        })
+                        .attr("text-anchor", "middle")                          //center the text on it's origin
+                        .text(function(d, i) { return pie_data[i].label; });        //get the label from our original data array
+
+                process(gridData);
+            });
+        });
     }
-    // localStorage.setItem("circle_data",JSON.stringify(circle_data));
-    $("#side_status").append("<h3>Timestep: <span id='demo'></span></h3>");
-    $("#side_status").append("<h3>Reward: <span id='reward'></span> </h3>");
-    $("#side_status").append("<h3>R/T: <span id='r_t'></span> </h3>");
-    $("#side_status").append("<div class='slidecontainer'>"+
-      "<input type='range' min='0' max="+circle_data.length+" value='0' class='slider' id='myRange'>"+
-      "<p>Timestep: <span id='demo1'></span></p>"+
-    '</div>');
-    $("#side_status").append("<button id='test' onclick='change_data()' type='button' class='btn btn-primary'>Change Data</button>");
-     // document.getElementById("main").style.display = "block";
-    document.getElementById("loader").style.display = "none";
-    // document.getElementsByClassName("myRange")[0].click();
-    setTimeout(function(){
-        var slider = document.getElementById("myRange");
-        var output = document.getElementById("demo");
-        var output1 = document.getElementById("demo1");
-        var reward = document.getElementById("reward");
-        var r_t = document.getElementById("r_t");
-        output.innerHTML = slider.value;
-        output1.innerHTML = slider.value;
-        reward.innerHTML = slider.value;
-        r_t.innerHTML = slider.value;
 
-
-        slider.oninput = function() {
-          output.innerHTML = this.value;
-          output1.innerHTML = this.value;
-          if(this.value!=0){
-            var reward_data=data[this.value-1][1][0];
-        }else{
-            var reward_data=0
+// I like to log the data to the console for quick debugging
+    function pre_process(){
+        $('#pre').hide();
+        document.getElementById("loader").style.display = "block";
+        if(sta==undefined&&ob==undefined){
+            sta=String($("#sel1").val());
+            ob=$("#sel2").val();
+            //console.log(sta);
+            sta=sta.split(".",1);
+            ob=ob.split(".",1);
+            document.location.href=ip+"?sta="+sta+"&ob="+ob;
         }
-          
-          var temp=0;
-          for(var i=0;i<reward_data.length;i++){
-            temp+=reward_data[i];
-          }
-          reward.innerHTML = temp;
-          r_t.innerHTML = (temp/(this.value)).toFixed(2);
-          if(this.value==0){
-            d3.select("svg").selectAll("path.circle").remove();
-          }else{
-            draw_obj(this.value-1);
-          }
+        var gridData = setGridData();  
+    }
+
+    function process(gridData){
+        // var circle_data=[];
+        // var data=JSON.parse(localStorage.getItem("ob_data"));
+        var data=ob_data;
+        // var data_index=0;
+        for(var i=0;i<data.length;i++){
+            var data_index=0;
+            var position=data[i][3][0];
+            var temp_data=new Array();
+            for(var j=0;j<position.length;j++){
+                var x=position[j][0];
+                var y=position[j][1];
+                var element=document.getElementById("case_"+String(x+gridData.length*y));
+                var x1=parseInt(element.getAttribute("x"));
+                var y1=parseInt(element.getAttribute("y"));
+                var width=parseInt(element.getAttribute("width"));
+                temp_data[data_index]={
+                    x: x1+width/2, 
+                    y: y1+width/2, 
+                    r: width/2, 
+                    fill: data[i][4][0][data_index]
+                    }
+                data_index++;
+            }
+           circle_data.push(temp_data);
         }
+        // localStorage.setItem("circle_data",JSON.stringify(circle_data));
+        $("#side_status").append("<h3>Timestep: <span id='demo'></span></h3>");
+        $("#side_status").append("<h3>Reward: <span id='reward'></span> </h3>");
+        $("#side_status").append("<h3>R/T: <span id='r_t'></span> </h3>");
+        $("#side_status").append("<div class='slidecontainer'>"+
+          "<input type='range' min='0' max="+circle_data.length+" value='0' class='slider' id='myRange'>"+
+          "<p>Timestep: <span id='demo1'></span></p>"+
+        '</div>');
+        $("#side_status").append("<button id='test' onclick='change_data()' type='button' class='btn btn-primary'>Change Data</button>");
+         // document.getElementById("main").style.display = "block";
+        document.getElementById("loader").style.display = "none";
+        // document.getElementsByClassName("myRange")[0].click();
+        setTimeout(function(){
+            var slider = document.getElementById("myRange");
+            var output = document.getElementById("demo");
+            var output1 = document.getElementById("demo1");
+            var reward = document.getElementById("reward");
+            var r_t = document.getElementById("r_t");
+            output.innerHTML = slider.value;
+            output1.innerHTML = slider.value;
+            reward.innerHTML = slider.value;
+            r_t.innerHTML = slider.value;
 
-         // $("#side_status").append(console.log(ob_data));
-        console.log(ob_data);
-        // document.getElementById("test")[0].click();
-        // $( "#myRange" ).trigger( "slidechange" );
-        $('#myRange').slider("value", 1);
-        $('#myRange').trigger('slidestart');
-        $('#myRange').trigger('slidechange');
-        $('#myRange').trigger('slidestop');
 
-},1000);
+            slider.oninput = function() {
+              output.innerHTML = this.value;
+              output1.innerHTML = this.value;
+              if(this.value!=0){
+                var reward_data=data[this.value-1][1][0];
+            }else{
+                var reward_data=0
+            }
+              
+              var temp=0;
+              for(var i=0;i<reward_data.length;i++){
+                temp+=reward_data[i];
+              }
+              reward.innerHTML = temp;
+              r_t.innerHTML = (temp/(this.value)).toFixed(2);
+              if(this.value==0){
+                d3.select("svg").selectAll("path.circle").remove();
+              }else{
+                draw_obj(this.value-1);
+              }
+            }
 
-}
+            // $("#side_status").append(console.log(ob_data));
+            //console.log(ob_data);
+            // document.getElementById("test")[0].click();
+            // $( "#myRange" ).trigger( "slidechange" );
+            $('#myRange').slider("value", 1);
+            $('#myRange').trigger('slidestart');
+            $('#myRange').trigger('slidechange');
+            $('#myRange').trigger('slidestop');
+
+        },1000);
+
+    }
     $.ajax({
-      url: "sta/",
-      success: function(data){
-         $(data).find("a:contains(.json)").each(function(){
+        url: "sta/",
+        success: function(data){
+            $(data).find("a:contains(.json)").each(function(){
             // will loop through 
-            $('<option></option>').html($(this).attr("href")).appendTo('#sel1');
+                $('<option></option>').html($(this).attr("href")).appendTo('#sel1');
             
-         });
-      }
+            });
+        }
     });
     $.ajax({
-      url: "ob/",
-      success: function(data){
-         $(data).find("a:contains(.json)").each(function(){
+        url: "ob/",
+        success: function(data){
+          $(data).find("a:contains(.json)").each(function(){
             // will loop through 
-            $('<option></option>').html($(this).attr("href")).appendTo('#sel2');
-         });
-      }
+              $('<option></option>').html($(this).attr("href")).appendTo('#sel2');
+          });
+        }
     });
     $('#submit').on('click', function() {
         pre_process();
-});
+    });
     $('#upload').on('click', function() {
         $('#message').empty();
-    var file_data = $('#fileToUpload').prop('files')[0];   
-    var form_data = new FormData(); 
-    var type=$("#sel3").val()+'/'; 
-    console.log(type);                
-    form_data.append('file', file_data);  
-    console.log(form_data);                         
-    $.ajax({
-        url: 'upload.php?type='+type, // point to server-side PHP script 
-        dataType: 'text',  // what to expect back from the PHP script, if anything
-        cache: false,
-        contentType: false,
-        processData: false,
-        data: form_data,                         
-        type: 'post',
-        success: function(){
-            $('#message').append('<p>The file has been uploaded.</p>') // display response from the PHP script, if any
-            setTimeout(function(){
-                location.reload();
-            },1000);
-        }
-     });
-});
-function change_data(){
-    document.location.href=ip;
-}
+        var file_data = $('#fileToUpload').prop('files')[0];   
+        var form_data = new FormData(); 
+        var type=$("#sel3").val()+'/'; 
+        //console.log(type);                
+        form_data.append('file', file_data);  
+        //console.log(form_data);                         
+        $.ajax({
+            url: 'upload.php?type='+type, // point to server-side PHP script 
+            dataType: 'text',  // what to expect back from the PHP script, if anything
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: form_data,                         
+            type: 'post',
+            success: function(){
+                $('#message').append('<p>The file has been uploaded.</p>') // display response from the PHP script, if any
+                setTimeout(function(){
+                    location.reload();
+                },1000);
+            }
+        });
+    });
+    function change_data(){
+        document.location.href=ip;
+    }
 </script>
 </html>
 
