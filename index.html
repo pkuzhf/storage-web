@@ -563,8 +563,8 @@
             sta=String($("#sel1").val());
             ob=$("#sel2").val();
             //console.log(sta);
-            sta=sta.split(".",1);
-            ob=ob.split(".",1);
+            sta=sta.split(".json",1);
+            ob=ob.split(".json",1);
             document.location.href=ip+"?sta="+sta+"&ob="+ob;
         }
         var gridData = setGridData();  
